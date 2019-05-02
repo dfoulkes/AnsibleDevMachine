@@ -1,0 +1,79 @@
+---
+  - name: install bast completion
+    apt:
+      name: 
+        -  bash-completion
+      state: latest  
+    become_user: "{{ system_user }}"
+    notify: 
+    - reboot linux system
+
+  - name: install the russell theme for zsh
+    get_url:
+      url: https://raw.githubusercontent.com/dfoulkes/oh-my-zsh/master/tools/install.sh
+      dest: /tmp/theme.sh
+      mode: 0700
+      owner: "{{ system_user }}" 
+    become: yes
+  
+  - name:  setup the zsh profile file
+    file: 
+       path: "/home/{{ system_user }}/.zshrc" 
+       state: touch
+       mode: 0755
+       owner: "{{ system_user }}"
+    become: yes
+
+  - name: install the new theme into the active user account
+    command: sh /tmp/theme.sh
+    become_user: "{{ system_user }}" 
+    become: yes
+
+  - name: install a vnc server to allow for remote access
+    apt: 
+      name:
+        - vnc4server
+    become: yes    
+
+  - name: install keychain application
+    apt:
+      name:
+       - keychain
+    become: yes    
+
+  - name: install base packages
+    apt:
+      name:
+         - python-dev
+         - python-setuptools
+         - build-essential
+         - python-pip
+      state: present
+      update_cache: yes
+      cache_valid_time: 604800
+    become: yes
+
+  - name: install pip tooling
+    pip:
+     name:
+         - botocore
+         - boto3
+         - awscli
+         - lxml
+         - hvac
+         - Jinja2           
+    become: yes
+  # issues with this module atm , we consider reintroduction when more stable.
+  #
+  # - name: install snapd
+  #   apt:
+  #     name:
+  #         - snapd
+  #   become: yes
+
+  # - name: install simplenote an easy to-use note taking application
+  #   snap:
+  #      name:
+  #          - simplenote
+  #   become_user: "{{ system_user }}"
+  #   become: yes

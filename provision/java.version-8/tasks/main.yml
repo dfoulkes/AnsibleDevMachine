@@ -1,0 +1,23 @@
+---
+# tasks file for java.version8
+
+  - name: Install OpenJDK 8
+    apt:
+      name:
+        - openjdk-8-jdk
+      state: latest
+      update_cache: yes  
+    become: yes
+
+  - name: configure java home to point to the openJDK 8
+    shell: echo 'JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"' >> /etc/environment
+    become: yes
+
+  - name: install maven 3
+    apt:
+       name:
+          - maven
+       state: latest
+       update_cache: yes 
+    become: yes
+

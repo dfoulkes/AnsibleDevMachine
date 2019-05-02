@@ -1,0 +1,70 @@
+---
+# tasks file for baseline
+  - name: add gnome 3 library
+    become: yes
+    apt_repository:
+      repo: ppa:gnome3-team/gnome3
+      update_cache: yes
+  
+  - name: Ensure group "danfoulkes" exists
+    group:
+      name: danfoulkes
+      state: present
+    become: yes
+
+
+  - name: install essentials
+    apt:
+      name: 
+       - zip
+       - curl
+       - git
+       - git-core
+       - zsh
+       - fonts-powerline
+       - nodejs
+       - bash-completion
+       - docker
+      state: latest
+      update_cache: yes
+    become: yes
+
+  - name: Add the user 'danfoulkes' with a specific uid and a primary group of 'admin' and ssh key
+    user:
+      name: "{{ system_user }}"
+      append: yes
+      comment: developer role on machine for {{ system_user }}
+      group: "root"
+      groups: 'sudo, {{ system_user }}'
+      shell: /bin/zsh
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      ssh_key_file: .ssh/id_rsa
+      password: "{{ system_password }}"
+    become: yes
+    notify: 
+    - reboot linux system
+
+  - name: install gnome shell
+    apt: 
+      name:
+        - gnome-shell
+      install_recommends: yes    
+      state: latest
+      update_cache: yes
+    become: yes 
+
+  - name: install the gnome3 desktop and screen saver
+    become: yes
+    apt:
+      name: 
+       - ubuntu-gnome-desktop
+       - xscreensaver 
+       - xscreensaver-data-extra 
+       - xscreensaver-gl-extra
+      install_recommends: yes
+      state: latest
+      update_cache: yes
+    notify: 
+    - reboot linux system
+

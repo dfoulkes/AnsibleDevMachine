@@ -1,0 +1,37 @@
+---
+# tasks file for code-tooling
+
+  - name: install common software tooling for ubuntu
+    apt:
+      name:
+        - software-properties-common
+        - apt-transport-https
+        - wget
+      state: latest 
+      update_cache: yes
+    become: yes 
+
+  - name: "install the key"
+    apt_key:
+      url: https://packages.microsoft.com/keys/microsoft.asc
+      state: present
+    become: yes 
+
+  - name: add microsoft repository
+    apt_repository:
+      repo: deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main 
+      update_cache: yes
+    become: yes  
+
+  - name: install Microsoft Visual Code
+    apt:
+      name:
+        - code
+      state: latest 
+    become: yes
+
+  - name: install the best terminal going
+    apt:
+      name: 
+        - guake
+    become: yes    
