@@ -24,6 +24,14 @@
        owner: "{{ system_user }}"
     become: yes
 
+  - name: tooling from apt
+    apt: 
+       name: 
+            - openconnect
+            - htop
+            - jq
+    become: yes
+
   - name: install the new theme into the active user account
     command: sh /tmp/theme.sh
     become_user: "{{ system_user }}" 
@@ -44,10 +52,9 @@
   - name: install base packages
     apt:
       name:
-         - python-dev
-         - python-setuptools
+         - python3.8-dev
+         - python3.8
          - build-essential
-         - python-pip
       state: present
       update_cache: yes
       cache_valid_time: 604800
@@ -56,13 +63,18 @@
   - name: install pip tooling
     pip:
      name:
+         - setuptools
          - botocore
          - boto3
-         - awscli
-         - lxml
-         - hvac
-         - Jinja2           
+         - awscli          
     become: yes
+
+  - name: change user shell to zsh
+    user:
+       name: "dan"
+       shell: /bin/fish
+    become: yes   
+
   # issues with this module atm , we consider reintroduction when more stable.
   #
   # - name: install snapd

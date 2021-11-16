@@ -1,29 +1,44 @@
-- name: install gonme3 with custom configuration for a dev machine
+- name: install development environment with custom configuration for a dev machine
   hosts: all 
   roles:
+    - role: geerlingguy.nodejs
+    - role: darkwizard242.python3
     - role: baseline
-    - role: java.version-8
+    - role: lean_delivery.java
     - role: code.tooling
     - role: gantsign.intellij
     
+    
   vars:
+   python3_app_el_package: python3
+   nodejs_version: "14.x"
+   npm_config_prefix: "/usr/local/lib/npm"
+   npm_config_unsafe_perm: "false"
+   nodejs_install_npm_user: "dan"
+   
+   nodejs_npm_global_packages:
+      - name: aws-cdk
 
-   system_user: danfoulkes
+   system_user: dandevopsman
    system_password: "$6$AXe355Juu21$zLqAAHyhL41xQhGCa4XRHDUPhl5NabKaygeAe0NCIWY9ypfjsd7AC/hdVD6HRATcUzBEJhU/5NZmuJTX1glE1."
-  ## Intellij Role
+   #JDK
+   java_major_version: 11
+   transport: web
+   transport_web: https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+   ## Intellij Role
    intellij_edition: ultimate
-   intellij_version: '2019.1.1'
+   intellij_version: '2021.2.2'
    intellij_mirror: 'http://download.jetbrains.com/idea'
    intellij_install_dir: /opt/idea/idea-{{ intellij_edition }}-{{ intellij_version }}
    intellij_plugin_manager_url: 'https://plugins.jetbrains.com/pluginManager/'
    intellij_download_dir: "{{ x_ansible_download_dir | default(ansible_env.HOME + '/tmp/') }}"
    intellij_default_maven_home: '/usr/share/maven'
    users: 
-     - username: danfoulkes
+     - username: dandevopsman
        intellij_jdks:
-          - name: '1.8'
-            home: /usr/lib/jvm/java-8-openjdk-amd64 
+          - name: '1.11'
+            home: /usr/lib/jvm/jdk-11.0.2 
        intellij_idea_download_timeout_seconds: 600
-       intellij_default_jdk: '1.8'
-
-  become_method: sudo    
+       intellij_default_jdk: '1.11'
+  become: yes
+  become_method: sudo   

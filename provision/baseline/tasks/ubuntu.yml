@@ -19,6 +19,7 @@
        - zip
        - curl
        - git
+       - net-tools
        - git-core
        - zsh
        - fonts-powerline
@@ -28,6 +29,12 @@
       state: latest
       update_cache: yes
     become: yes
+
+  - name: create user group
+    ansible.builtin.group:
+        name: "{{ system_user }}"
+        state: present
+    become: yes    
 
   - name: Add the user 'danfoulkes' with a specific uid and a primary group of 'admin' and ssh key
     user:
