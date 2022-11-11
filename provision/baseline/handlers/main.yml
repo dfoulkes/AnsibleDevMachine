@@ -3,4 +3,4 @@
   - name:  reboot linux system
     reboot:
       reboot_timeout: 3600
-    become: yes
+    become: true

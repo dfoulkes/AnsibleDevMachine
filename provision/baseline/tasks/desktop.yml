@@ -1,79 +1,35 @@
 ---
-  - name: install bast completion
-    apt:
-      name: 
-        -  bash-completion
-      state: latest  
-    become_user: "{{ system_user }}"
-    notify: 
-    - reboot linux system
-
-  - name: install the russell theme for zsh
-    get_url:
-      url: https://raw.githubusercontent.com/dfoulkes/oh-my-zsh/master/tools/install.sh
-      dest: /tmp/theme.sh
-      mode: 0700
-      owner: "{{ system_user }}" 
-    become: yes
-  
-  - name:  setup the zsh profile file
-    file: 
-       path: "/home/{{ system_user }}/.zshrc" 
-       state: touch
-       mode: 0755
-       owner: "{{ system_user }}"
-    become: yes
-
   - name: tooling from apt
     apt: 
        name: 
             - openconnect
             - htop
             - jq
-    become: yes
-
-  - name: install the new theme into the active user account
-    command: sh /tmp/theme.sh
-    become_user: "{{ system_user }}" 
-    become: yes
-
-  - name: install a vnc server to allow for remote access
-    apt: 
-      name:
-        - vnc4server
-    become: yes    
-
+    become: true
+ 
   - name: install keychain application
     apt:
       name:
        - keychain
-    become: yes    
+    become: true    
 
   - name: install base packages
     apt:
       name:
-         - python3.8-dev
-         - python3.8
+         - python3.10-dev
+         - python3.10
          - build-essential
       state: present
       update_cache: yes
       cache_valid_time: 604800
-    become: yes
+    become: true
 
-  - name: install pip tooling
-    pip:
-     name:
-         - setuptools
-         - botocore
-         - boto3
-         - awscli          
-    become: yes
-
-  - name: change user shell to zsh
+  - name: change user shell to fish
     user:
-       name: "dan"
+       name: "{{ system_user }}"
        shell: /bin/fish
-    become: yes   
+    become: true   
+
 
   # issues with this module atm , we consider reintroduction when more stable.
   #

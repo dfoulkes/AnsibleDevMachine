@@ -1,68 +1,97 @@
 ---
-# tasks file for baseline
-  - name: add gnome 3 library
-    become: yes
-    apt_repository:
-      repo: ppa:gnome3-team/gnome3
-      update_cache: yes
-  
-  - name: Ensure group "danfoulkes" exists
-    group:
-      name: danfoulkes
-      state: present
-    become: yes
-
-
   - name: install essentials
     apt:
       name: 
        - zip
+       - jq
+       - guake 
        - curl
        - git
        - net-tools
        - git-core
-       - zsh
+       - fish
        - fonts-powerline
        - nodejs
        - bash-completion
        - docker
+       - openconnect
+       - openssh-server
+       
       state: latest
       update_cache: yes
-    become: yes
+    become: true
+
+  - name: install oh-my-fish get url
+    get_url: 
+        url: https://github.com/oh-my-fish/oh-my-fish/raw/master/bin/install 
+        dest: /tmp/install
+        mode: 0755
+
+  - name: install oh-my-fish
+    shell: fish /tmp/install --verbose --noninteractive --yes
+    become: true
+
+
+  - name: check if aws is already installed
+    stat:
+         path: /usr/local/bin/aws
+    register: aws_install
+    
+  - name: download awscli
+    get_url: 
+        url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+        dest: /tmp/awscliv2.zip
+        mode: 0755
+
+  - name: unzip awscli installer into temp
+    ansible.builtin.unarchive:  
+       src: /tmp/awscliv2.zip
+       dest: /tmp/
+
+  - name: install awscli command line
+    shell: /tmp/aws/install
+    when: not aws_install.stat.exists
+    become: true
+
+  - name: update existing aws cli 
+    shell: /tmp/aws/install --update
+    when:  aws_install.stat.exists
+    become: true
 
   - name: create user group
     ansible.builtin.group:
         name: "{{ system_user }}"
         state: present
-    become: yes    
+    become: true    
 
-  - name: Add the user 'danfoulkes' with a specific uid and a primary group of 'admin' and ssh key
+  - name: Add the system user with a specific uid and a primary group of 'admin' and ssh key
     user:
       name: "{{ system_user }}"
       append: yes
       comment: developer role on machine for {{ system_user }}
       group: "root"
       groups: 'sudo, {{ system_user }}'
-      shell: /bin/zsh
+      shell: /bin/fish
       generate_ssh_key: yes
       ssh_key_bits: 2048
       ssh_key_file: .ssh/id_rsa
       password: "{{ system_password }}"
-    become: yes
-    notify: 
-    - reboot linux system
+    become: true
+    # notify: 
+    # - reboot linux system
 
   - name: install gnome shell
     apt: 
       name:
         - gnome-shell
+        - gdm3
       install_recommends: yes    
       state: latest
       update_cache: yes
-    become: yes 
+    become: true 
 
   - name: install the gnome3 desktop and screen saver
-    become: yes
+    become: true
     apt:
       name: 
        - ubuntu-gnome-desktop
@@ -72,6 +101,5 @@
       install_recommends: yes
       state: latest
       update_cache: yes
-    notify: 
-    - reboot linux system
-
+    # notify: 
+    # - reboot linux system

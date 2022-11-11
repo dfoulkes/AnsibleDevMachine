@@ -1,0 +1,6 @@
+all:
+  hosts:
+    work:
+      ansible_host: 192.168.50.231
+      ansible_user: dan
+    

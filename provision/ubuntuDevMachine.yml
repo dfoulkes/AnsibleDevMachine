@@ -1,44 +1,49 @@
 - name: install development environment with custom configuration for a dev machine
   hosts: all 
   roles:
+    - role: baseline
     - role: geerlingguy.nodejs
     - role: darkwizard242.python3
-    - role: baseline
     - role: lean_delivery.java
     - role: code.tooling
     - role: gantsign.intellij
     
     
   vars:
-   python3_app_el_package: python3
-   nodejs_version: "14.x"
+
+   system_user: dan
+   system_password: "$6$AXe355Juu21$zLqAAHyhL41xQhGCa4XRHDUPhl5NabKaygeAe0NCIWY9ypfjsd7AC/hdVD6HRATcUzBEJhU/5NZmuJTX1glE1."
+
+
+   python3_desired_state: latest
+   nodejs_version: "19.x"
    npm_config_prefix: "/usr/local/lib/npm"
    npm_config_unsafe_perm: "false"
-   nodejs_install_npm_user: "dan"
+   nodejs_install_npm_user: "{{ system_user }}"
    
    nodejs_npm_global_packages:
       - name: aws-cdk
 
-   system_user: dandevopsman
-   system_password: "$6$AXe355Juu21$zLqAAHyhL41xQhGCa4XRHDUPhl5NabKaygeAe0NCIWY9ypfjsd7AC/hdVD6HRATcUzBEJhU/5NZmuJTX1glE1."
+
    #JDK
-   java_major_version: 11
+   java_major_version: 17
    transport: web
-   transport_web: https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+   transport_web: https://download.java.net/java/GA/jdk17.0.1/2a2082e5a09d4267845be086888add4f/12/GPL/openjdk-17.0.1_linux-x64_bin.tar.gz
    ## Intellij Role
    intellij_edition: ultimate
-   intellij_version: '2021.2.2'
+   intellij_version: '2022.2.3'
+   intellij_redis_sha256sum: e1f9de8173cec9f7166894d66b82b89dee4da9022c05366d192f6112956184b3
    intellij_mirror: 'http://download.jetbrains.com/idea'
    intellij_install_dir: /opt/idea/idea-{{ intellij_edition }}-{{ intellij_version }}
    intellij_plugin_manager_url: 'https://plugins.jetbrains.com/pluginManager/'
    intellij_download_dir: "{{ x_ansible_download_dir | default(ansible_env.HOME + '/tmp/') }}"
    intellij_default_maven_home: '/usr/share/maven'
    users: 
-     - username: dandevopsman
+     - username: dan
        intellij_jdks:
-          - name: '1.11'
-            home: /usr/lib/jvm/jdk-11.0.2 
+          - name: '1.17'
+            home: /usr/lib/jvm/jdk-17.0.1 
        intellij_idea_download_timeout_seconds: 600
-       intellij_default_jdk: '1.11'
+       intellij_default_jdk: '1.17'
   become: yes
   become_method: sudo   

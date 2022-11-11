@@ -1,3 +1,4 @@
 ---  
    - include: tasks/ubuntu.yml
    - include: tasks/desktop.yml
+   - include: tasks/hyperv.yml
